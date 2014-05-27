@@ -10,7 +10,6 @@
  margin:0 auto;
  position:absolute;
  left:60%;
-
  margin-left:-150px;
  
 }
@@ -88,13 +87,20 @@
 
 }
 </style>
-<body>
+<body onLoad="onLoad()">
 <div id="wrapper">
-<label><input type="checkbox" class="ios-switch" id="0" onclick="update(0)" /><div id="switch"></div><div id="sock0">Lamp</div></label></br></br>
-<label><input type="checkbox" class="ios-switch" id="1" onclick="update(1)" /><div id="switch"></div><div id="sock1">Monitors</div></label></br></br>
-<label><input type="checkbox" class="ios-switch" id="2" onclick="update(2)" /><div id="switch"></div><div id="sock2">Speakers</div></label></br></br>
-<label><input type="checkbox" class="ios-switch" id="3" onclick="update(3)" /><div id="switch"></div><div id="sock3">Lights</div></label></br></br>
+<h3>Manual Controls</h3>
+<label for="0"><input type="checkbox" class="ios-switch" id="0" onclick="update(0)" /><div id="switch"></div><span id="sock0">Lamp</span></label></br></br>
+<label for="1"><input type="checkbox" class="ios-switch" id="1" onclick="update(1)" /><div id="switch"></div><span id="sock1">Monitors</span></label></br></br>
+<label for="2"><input type="checkbox" class="ios-switch" id="2" onclick="update(2)" /><div id="switch"></div><span id="sock2">Speakers</span></label></br></br>
+<label for="3"><input type="checkbox" class="ios-switch" id="3" onclick="update(3)" /><div id="switch"></div><span id="sock3">Lights</span></label></br></br>
+<h3>Defaults:</h3>
+<label for="a"><input type="checkbox" class="ios-switch" id="a" onclick="updateDefault(0,'a');" /><div id="switch"></div><span id="sock4">Lamp</span></label></br></br>
+<label for="b"><input type="checkbox" class="ios-switch" id="b" onclick="updateDefault(1,'b');" /><div id="switch"></div><span id="sock5">Monitors</span></label></br></br>
+<label for="c"><input type="checkbox" class="ios-switch" id="c" onclick="updateDefault(2,'c');" /><div id="switch"></div><span id="sock6">Speakers</span></label></br></br>
+<label for="d"><input type="checkbox" class="ios-switch" id="d" onclick="updateDefault(3,'d');" /><div id="switch"></div><span id="sock7">Lights</span></label></br></br>
 </div>
+
 </div>
 </body>
 <script>
@@ -130,24 +136,46 @@ function refreshStatus(){
 				document.getElementById(index).checked = false;
 		});
 	});
-	setTimeout('refreshStatus()', 10000);
+	setTimeout('refreshStatus()', 3000);
 }
 
-function readConfig(){
-	getData('config', function(data){
+function getDefaults(){
+	getData('getDefaults', function(data){
+		refreshStatus();
 		data.forEach(function(element, index, arr){
-				document.getElementById("sock"+index).innerHTML = element;
+			if(element == 1)
+				document.getElementById(String.fromCharCode('a'.charCodeAt(0) + index)).checked = true;
+			else
+				document.getElementById(String.fromCharCode('a'.charCodeAt(0) + index)).checked = false;
 		});
 	});
 }
 
-refreshStatus();
-readConfig();
+
+function readConfig(){
+	getData('config', function(data){
+		getDefaults();
+		data.forEach(function(element, index, arr){
+				document.getElementById("sock"+index).innerHTML = element;
+				document.getElementById("sock"+(index+4)).innerHTML = element;
+		});
+	});
+}
+function onLoad(){
+	readConfig();
+}
 
 function update(plug){
 	var state = document.getElementById(plug).checked ? "1" : "0";
 	postData("setPlug", "plug=" + plug + "&state=" + state, function(){ return; });
 	refreshStatus();
 }
+
+function updateDefault(plug, checkbox){
+	var state = document.getElementById(checkbox).checked ? "1" : "0";
+	postData("setDefault", "plug=" + plug + "&state=" + state, function(){ return; });
+	refreshStatus();
+}
+
 </script
 </html>

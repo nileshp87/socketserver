@@ -1,9 +1,19 @@
 <html>
+<meta name="viewport" content="width=device-width, user-scalable=no">
 <style type="text/css">
 /**
  * iOS 6 style switch checkboxes
  * by Lea Verou http://lea.verou.me
  */
+#wrapper
+{
+ margin:0 auto;
+ position:absolute;
+ left:60%;
+
+ margin-left:-150px;
+ 
+}
 
 :root input[type="checkbox"] { /* :root here acting as a filter for older browsers */
 	position: absolute;
@@ -79,10 +89,12 @@
 }
 </style>
 <body>
-<label><input type="checkbox" class="ios-switch" id="0" onclick="update(0)" /><div id="switch"></div>Lamp</label></br></br>
-<label><input type="checkbox" class="ios-switch" id="1" onclick="update(1)" /><div id="switch"></div>Monitors</label></br></br>
-<label><input type="checkbox" class="ios-switch" id="2" onclick="update(2)" /><div id="switch"></div>Speakers</label></br></br>
-<label><input type="checkbox" class="ios-switch" id="3" onclick="update(3)" /><div id="switch"></div>Lights</label></br></br>
+<div id="wrapper">
+<label><input type="checkbox" class="ios-switch" id="0" onclick="update(0)" /><div id="switch"></div><div id="sock0">Lamp</div></label></br></br>
+<label><input type="checkbox" class="ios-switch" id="1" onclick="update(1)" /><div id="switch"></div><div id="sock1">Monitors</div></label></br></br>
+<label><input type="checkbox" class="ios-switch" id="2" onclick="update(2)" /><div id="switch"></div><div id="sock2">Speakers</div></label></br></br>
+<label><input type="checkbox" class="ios-switch" id="3" onclick="update(3)" /><div id="switch"></div><div id="sock3">Lights</div></label></br></br>
+</div>
 </div>
 </body>
 <script>
@@ -108,16 +120,30 @@ function getData(url, callback){
 	http.send(null);
 }
 
+
 function refreshStatus(){
 	getData('status', function(data){
 		data.forEach(function(element, index, arr){
-			if(element == 1){
+			if(element == 1)
 				document.getElementById(index).checked = true;
-			}
+			else
+				document.getElementById(index).checked = false;
+		});
+	});
+	setTimeout('refreshStatus()', 10000);
+}
+
+function readConfig(){
+	getData('config', function(data){
+		data.forEach(function(element, index, arr){
+				document.getElementById("sock"+index).innerHTML = element;
 		});
 	});
 }
+
 refreshStatus();
+readConfig();
+
 function update(plug){
 	var state = document.getElementById(plug).checked ? "1" : "0";
 	postData("setPlug", "plug=" + plug + "&state=" + state, function(){ return; });

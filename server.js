@@ -63,6 +63,14 @@ app.post('/setDefault', function(req, res){
 	res.send(true);
 });
 
+app.post('/toggleSocket', function(req, res){
+	status[parseInt(req.body.plug)] = status[parseInt(req.body.plug)] == 0 ? 1 : 0;
+	var mod = status[parseInt(req.body.plug)] == 0 ? 5 : 1;
+	mod += parseInt(req.body.plug);
+	serialport.write(mod+"");
+	res.send(true);
+});
+
 app.get('/getDefaults', function(req, res){
 	res.send(defaults);
 });

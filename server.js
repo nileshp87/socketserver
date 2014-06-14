@@ -2,12 +2,15 @@ var express = require('express');
 var app = express();
 var fs = require('fs');
 var config = ["Socket 1", "Socket 2", "Socket 3", "Socket 4"];
-fs.exists('config.json', function(exists){
+function configLoad(){
+	fs.exists('config.json', function(exists){
 	if(exists)
 		config = JSON.parse(fs.readFileSync('config.json'));
 	else
 		fs.writeFileSync('config.json', JSON.stringify(config));
-});
+	});
+}
+configLoad();
 app.use(express.urlencoded());
 var sp = require("serialport");
 var SerialPort = sp.SerialPort;
@@ -75,3 +78,6 @@ app.get('/getDefaults', function(req, res){
 	res.send(defaults);
 });
 
+app.get('/reloadConfiguration', function(req, res){
+	configLoad();
+});
